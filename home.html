@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <title>Swiss</title>
+  </head>
+  <body>
+    <div class="subscribe-box">
+      <h2>download</h2>
+      <form class="subscribe">
+        <input
+          type="text"
+          placeholder="what do you want"
+          id="item"
+          required="required"
+          oninvalid="this.setCustomValidity('אין מספר')"
+          oninput="setCustomValidity('')"
+        />
+        <button id="sendBt" type="submit"><span>Add</span></button>
+      </form>
+    </div>
+    <script>
+      const electron = require("electron");
+      const { ipcRenderer } = electron;
+      const form = document.querySelector("form");
+      form.addEventListener("submit", submitForm);
+      function submitForm(e) {
+        e.preventDefault();
+        const item = document.querySelector("#item").value;
+        console.log(item);
+        ipcRenderer.send("item:add", item);
+        document.querySelector("#item").value = null;
+        document.querySelector("#sendBt").disabled = true;
+        document.querySelector("#sendBt").classList.remove("error1");
+      }
+      ipcRenderer.on("finishDownload", (event, message) => {
+        document.querySelector("#sendBt").disabled = false;
+        document.querySelector("#sendBt").innerHTML = "<span>Add</span>";
+        //generate a message that says finished download
+      });
+      ipcRenderer.on("error1", (event, message) => {
+        document.querySelector("#sendBt").disabled = false;
+        document.querySelector("#sendBt").innerHTML = "Error";
+        document.querySelector("#sendBt").classList.add("error1");
+      });
+    </script>
+  </body>
+</html>
